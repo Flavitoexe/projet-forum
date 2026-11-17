@@ -1,0 +1,28 @@
+.category-title-container { 
+    margin: 25px;
+    padding: 15px;
+
+    border-bottom: solid 1px #3E4142;
+    box-shadow: 0 5px 20px black;
+}
+
+.section-desc { padding: 20px 15px; }
+.categories-list { padding: 20px; }
+
+.category-btn {
+    border-top: solid 1px #3E4142;
+    padding: 10px;
+
+    display: flex;
+    flex-direction: column;
+}
+.category-btn:hover { background-color: #181d20; cursor: pointer; }
+
+.category-btn-desc { padding: 5px 0; }
+.category-btn-category-title { font-size: 14px; }
+
+.thread-btn-infos-container {
+    display: flex;
+    align-items: end;
+    gap: 7px;
+}

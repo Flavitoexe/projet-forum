@@ -1,0 +1,28 @@
+.news-container { 
+    margin: 25px;
+    padding: 15px;
+
+    border-bottom: solid 1px #3E4142;
+    box-shadow: 0 5px 20px black;
+}
+.section-desc { padding: 20px 15px; }
+
+.threads-list { padding: 20px; }
+
+.thread-btn {
+    border-top: solid 1px #3E4142;
+    padding: 10px;
+
+    display: flex;
+    flex-direction: column;
+}
+.thread-btn:hover { background-color: #181d20; cursor: pointer; }
+
+.thread-btn-post-title { padding: 5px 0; }
+.thread-btn-thread-title { font-size: 14px; }
+
+.thread-btn-infos-container {
+    display: flex;
+    align-items: end;
+    gap: 7px;
+}

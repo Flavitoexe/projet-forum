@@ -1,0 +1,71 @@
+{{define "categories"}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="/assets/img/shortcut-icon.png">
+    <link rel="stylesheet" href="/assets/css/style-global.css">
+    <link rel="stylesheet" href="/assets/css/style-categories.css">
+    <title>Bluedit</title>
+</head>
+<body>
+    <header>
+        <div class="header-logo">
+            <h1 class="logo-title">Bluedit</h1>
+        </div>
+        <div class="search-form-container">
+            <form class="search-form">
+                <img class="search-form-logo" src="../assets/img/shortcut-icon.png" alt="bluedit-logo">
+                <input class="search-form-input" name="search" id="search" placeholder="Chercher n'importe quoi..">
+            </form>
+        </div>
+        <div class="header-profile-container">
+           {{if eq .UserData.Data.IdUser -1}}
+            <div class="register-btn auth-btn">
+                <a href="/register">Créer un compte</a>
+            </div>
+            <div class="login-btn auth-btn">
+                <a href="/login">Se connecter</a>
+            </div>
+            {{else}}
+            <p class="welcome-desc">Salut {{.UserData.Data.Name}} !</p>   
+            {{end}}
+        </div>
+    </header>
+    <main>
+        <aside class="side-navbar-container">
+            <div class="sort-btn-container">
+                <h3 class="sort-btn populars">Populaires</h3>
+                <h3 class="sort-btn news">Nouveaux</h3>
+                <h3 class="sort-btn explorer">Explorer</h3>
+            </div>
+        </aside>
+        <div class="main-container">
+            <div class="category-title-container">
+                <h1 class="section-title">Catégories</h1>
+                <p class="section-desc">Trouvez votre catégorie pour trouver des gens qui parlent de la même chose que vous !</p>
+            </div>
+            <div class="categories-list">
+                {{range .CategoriesData.Data}}
+                <div class="category-btn" id="{{.IdCategory}}">
+                    <div class="category-btn-title-container">
+                        <h4 class="category-btn-category-title">b/{{.Name}}</h4>
+                        <p class="category-btn-desc">{{.Description}}</p>
+                    </div>
+                </div>
+                {{end}}
+            </div>
+        </div>
+        <div class="popular-categories">
+            <h3>Catégories populaires</h3>
+            {{range .CategoriesData.Data}}
+            <p class="popular-categories-name" id="{{.IdCategory}}">b/{{.Name}}</p>
+            {{end}}
+        </div>
+    </main>
+    <script src="../scripts/script-categories.js"></script>
+    <script src="../scripts/script-global.js"></script>
+</body>
+</html>
+{{end}}

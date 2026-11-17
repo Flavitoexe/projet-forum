@@ -1,0 +1,34 @@
+{{define "login"}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="../assets/img/shortcut-icon.png">
+    <link rel="stylesheet" href="/assets/css/style-global.css">
+    <link rel="stylesheet" href="../assets/css/style-login.css">
+    <title>Bluedit</title>
+</head>
+<body>
+    <main>
+        <div class="auth-text-container">
+            <h1>Bienvenue sur Bluedit !</h1>
+            <h2 class="menu-title">Connexion</h1>
+        </div>
+        <div class="auth-form-container">
+            <form class="auth-form" action="/login" method="POST">
+                <input class="login-form-input" id="username" name="username" type="text" placeholder="Adresse email ou nom d'utilisateur">
+                <input class="login-form-input" id="password" name="password" type="password" placeholder="Mot de passe">
+
+                <button type="submit" class="login-btn submit-btn">Se connecter</button>
+            </form>
+            <div class="register-redirection-container">
+                <p>Pas encore de compte ?</p>
+                <a href="register" class="register-redirection-btn">Créer un compte</p>
+            </div>
+        </div>
+    </main>
+    <!-- <script src="../scripts/script-auth.js"></script> -->
+</body>
+</html>
+{{end}}

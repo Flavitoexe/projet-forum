@@ -1,0 +1,35 @@
+{{define "register"}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="/assets/img/shortcut-icon.png">
+    <link rel="stylesheet" href="/assets/css/style-global.css">
+    <link rel="stylesheet" href="/assets/css/style-register.css">
+    <title>Bluedit - Inscription</title>
+</head>
+<body>
+    <main>
+        <div class="auth-text-container">
+            <h1>Bienvenue sur Bluedit !</h1>
+            <h2 class="menu-title">Créer un compte</h2>
+        </div>
+        <div class="auth-form-container">
+            <form class="auth-form" action="/register" method="POST">
+                <input class="register-form-input" id="username" name="username" type="text" placeholder="Nom d'utilisateur" required>
+                <input class="register-form-input" id="email" name="email" type="text" placeholder="Adresse email" required>
+                <input class="register-form-input" id="password" name="password" type="password" placeholder="Mot de passe" required>
+                
+                <button type="submit" class="register-btn submit-btn">S'inscrire</button>
+            </form>
+            <div class="login-redirection-container">
+                <p>Déjà un compte ?</p>
+                <a href="/login" class="login-redirection-btn">Se connecter</a>
+            </div>
+        </div>
+    </main>
+    <script src="/scripts/script-auth.js"></script>
+</body>
+</html>
+{{end}}

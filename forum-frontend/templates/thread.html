@@ -1,0 +1,170 @@
+{{define "thread"}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="/assets/img/shortcut-icon.png">
+    <link rel="stylesheet" href="/assets/css/style-global.css">
+    <link rel="stylesheet" href="/assets/css/style-thread.css">
+    <title>Bluedit</title>
+</head>
+<body>
+    <div class="overlay invisible">
+        <div class="add-message-form-container invisible">
+            <h2 class="add-message-title">Qu'avez vous à dire ?</h2>
+            <div class="add-message-form">
+                <form action="/message/{{.ThreadData.Data.IdThread}}" method="POST">
+                    <input class="message-form-input" id="content" name="content" type="textarea" placeholder="Blabla bla..." required>
+                    <button type="submit" class="message-submit-btn submit-btn">Envoyer</button>
+                </form>
+            </div>
+        </div>
+        <div class="delete-message-form-container invisible">
+            <h2 class="delete-message-title">Supprimer votre message ?</h2>
+            <div class="delete-message-form">
+                <form class="delete-message-form-tag" action="" method="POST">
+                    <button type="submit" class="message-submit-btn-yes submit-btn">Oui</button>
+                    <button type="button" class="message-submit-btn-no submit-btn">Non</button>
+                </form>
+            </div>
+        </div>
+         <div class="delete-thread-form-container invisible">
+            <h2 class="delete-thread-title">Supprimer votre fil ?</h2>
+            <div class="delete-thread-form">
+                <form class="delete-thread-form-tag" action="/delete/thread/{{.ThreadData.Data.FkIdCategory}}&{{.ThreadData.Data.IdThread}}" method="POST">
+                    <button type="submit" class="thread-submit-btn-yes submit-btn">Oui</button>
+                    <button type="button" class="thread-submit-btn-no submit-btn">Non</button>
+                </form>
+            </div>
+        </div>
+        <div class="update-message-form-container invisible">
+            <h2 class="update-message-title">Qu'avez vous à changer ?</h2>
+            <div class="update-message-form">
+                <form class="update-message-form-tag" method="POST">
+                    <input class="message-form-input" id="content" name="content" type="textarea" placeholder="Blabla bla..." required>
+                    <button type="submit" class="message-submit-btn submit-btn">Envoyer</button>
+                </form>
+            </div>
+        </div>
+        <div class="update-thread-form-container invisible">
+            <h2 class="update-thread-title">Qu'avez vous à changer ?</h2>
+            <div class="update-thread-form">
+                <form class="update-thread-form-tag" action="/update/thread/{{.ThreadData.Data.IdThread}}" method="POST">
+                    <input class="thread-form-input" id="name" name="name" type="textarea" placeholder="Nom du thread" required>
+                    <input class="thread-form-input" id="content" name="content" type="textarea" placeholder="Blabla bla..." required>
+                    <select class="thread-form-input" id="category" name="category">
+                        {{range .CategoriesData.Data}}
+                        <option value="{{.IdCategory}}">{{.Name}}</option>
+                        {{end}}
+                    </select>
+                    <button type="submit" class="thread-submit-btn submit-btn">Envoyer</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <header>
+        <div class="header-logo">
+            <h1 class="logo-title">Bluedit</h1>
+        </div>
+        <div class="search-form-container">
+            <form class="search-form">
+                <img class="search-form-logo" src="../assets/img/shortcut-icon.png" alt="bluedit-logo">
+                <input class="search-form-input" name="search" id="search" placeholder="Chercher n'importe quoi..">
+            </form>
+        </div>
+        <div class="header-profile-container">
+            {{if eq .UserData.Data.IdUser -1}}
+            <div class="register-btn auth-btn">
+                <a href="/register">Créer un compte</a>
+            </div>
+            <div class="login-btn auth-btn">
+                <a href="/login">Se connecter</a>
+            </div>
+            {{else}}
+            <p class="welcome-desc">Salut {{.UserData.Data.Name}} !</p>   
+            {{end}}
+        </div>
+    </header>
+    <main>
+        <aside class="side-navbar-container">
+            <div class="sort-btn-container">
+                <h3 class="sort-btn populars">Populaires</h3>
+                <h3 class="sort-btn news">Nouveaux</h3>
+                <h3 class="sort-btn explorer">Explorer</h3>
+            </div>
+        </aside>
+        <div class="main-container">
+            <div class="thread-infos-container" id="{{.ThreadData.Data.IdThread}}">
+                <div class="thread-info-header">
+                    <h1 class="thread-title">{{.ThreadData.Data.Name}}</h1>
+                    {{if and (le .ThreadData.Data.LikeCount 1) (le .ThreadData.Data.MessageCount 1) }}
+                    <p class="thread-stats">{{.ThreadData.Data.LikeCount}} Like, {{.ThreadData.Data.MessageCount}} Commentaire</p>
+                    {{else if and (le .ThreadData.Data.LikeCount 1) (gt .ThreadData.Data.MessageCount 1) }}
+                    <p class="thread-stats">{{.ThreadData.Data.LikeCount}} Like, {{.ThreadData.Data.MessageCount}} Commentaires</p>
+                    {{else if and (gt .ThreadData.Data.LikeCount 1) (le .ThreadData.Data.MessageCount 1)}}
+                    <p class="thread-stats">{{.ThreadData.Data.LikeCount}} Likes, {{.ThreadData.Data.MessageCount}} Commentaire</p>
+                    {{else}}
+                    <p class="thread-stats">{{.ThreadData.Data.LikeCount}} Likes, {{.ThreadData.Data.MessageCount}} Commentaires</p>
+                    {{end}}
+                </div>
+                {{if .ThreadData.Data.Author}}
+                <h4 class="thread-author">{{.ThreadData.Data.Author}}</h4>
+                {{else}}
+                <h4 class="thread-author">Utilisateur supprimé</h4>
+                {{end}}
+                <p class="thread-content">{{.ThreadData.Data.Content}}</p>
+                {{if or (eq $.UserData.Data.IdUser .ThreadData.Data.FkIdUser) (eq $.UserData.Data.Role "admin") }}
+                <div class="thread-actions">
+                    <button class="edit-thread-btn thread-action-btn" id="{{.ThreadData.Data.IdThread}}">✏️</button>
+                    <button class="delete-thread-btn thread-action-btn" id="{{.ThreadData.Data.IdThread}}">❌</button>
+                </div>
+                {{end}}
+            </div>
+
+            {{range .MessagesData.Data}}
+            <div class="message-container" id="{{.IdMessage}}">
+                <div class="upper-message">
+                    {{if eq .Author nil}}
+                    <h4 class="user-name">Utilisateur supprimé</h4>
+                    {{else}}
+                    <h4 class="user-name">{{.Author}}</h4>
+                    {{end}}
+                    <p class="user-content">{{.Content}}</p>
+                </div>
+
+                <div class="lower-message">
+                    {{if or (eq $.UserData.Data.IdUser .FkIdUser) (eq $.UserData.Data.Role "admin") }}
+                    <div class="message-actions">
+                        <button class="edit-btn msg-action-btn" id="{{.IdMessage}}">✏️</button>
+                        <button class="delete-btn msg-action-btn" id="{{.IdMessage}}">❌</button>
+                    </div>
+                    {{end}}
+                    <div class="date-infos-container">
+                        <p class="message-created-at message-date">Posté : {{.CreatedAt}}</p>
+                    {{if .UpdatedAt}}
+                    <p class="message-updated-at message-date">Modifié : {{.UpdatedAt}}</p>
+                    {{else}}
+                    {{end}}
+                    </div>
+                </div>
+            </div>
+            {{end}}
+
+            <div class="add-message-btn-container">
+                <div class="add-message-btn">+</div>
+                <h3 class="add-message-label">Ajouter un message</h3>
+            </div>
+        </div>
+        <div class="popular-categories">
+            <h3>Catégories populaires</h3>
+            {{range .CategoriesData.Data}}
+            <p class="popular-categories-name" id="{{.IdCategory}}">b/{{.Name}}</p>
+            {{end}}
+        </div>
+    </main>
+    <script src="../scripts/script-thread.js"></script>
+    <script src="../scripts/script-global.js"></script>
+</body>
+</html>
+{{end}}

@@ -2,6 +2,7 @@ package services_client
 
 import (
 	"bluedit/forum-frontend/dto"
+	"bluedit/forum-frontend/helper"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -19,7 +20,7 @@ func GetUserById(id int) (*dto.DtoUser, int, error) {
 	}
 	_client := http.Client{Timeout: time.Second * 5}
 
-	request, requestErr := http.NewRequest(http.MethodGet, fmt.Sprintf("http://localhost:3000/api/user/%v", id), nil)
+	request, requestErr := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/api/user/%v", helper.BackendURL(), id), nil)
 	if requestErr != nil {
 		return nil,
 			http.StatusInternalServerError,

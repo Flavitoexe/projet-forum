@@ -9,11 +9,12 @@ import (
 
 	"bluedit/forum-backend/models"
 	"bluedit/forum-frontend/dto"
+	"bluedit/forum-frontend/helper"
 )
 
 func GetAllMessages() ([]models.Message, error) {
 	client := http.Client{Timeout: time.Second * 10}
-	resp, err := client.Get("http://localhost:3000/api/messages")
+	resp, err := client.Get(helper.BackendURL() + "/api/messages")
 	if err != nil {
 		return nil, err
 	}
@@ -27,7 +28,7 @@ func GetAllMessages() ([]models.Message, error) {
 func GetMessageById(id string) (models.Message, error) {
 	var message models.Message
 	client := http.Client{Timeout: time.Second * 10}
-	resp, err := client.Get("http://localhost:3000/api/message/" + id)
+	resp, err := client.Get(helper.BackendURL() + "/api/message/" + id)
 	if err != nil {
 		return message, err
 	}
@@ -44,7 +45,7 @@ func CreateMessage(message dto.DtoMessage) error {
 	}
 
 	client := http.Client{Timeout: time.Second * 10}
-	resp, err := client.Post("http://localhost:3000/api/message", "application/json", bytes.NewBuffer(jsonData))
+	resp, err := client.Post(helper.BackendURL()+"/api/message", "application/json", bytes.NewBuffer(jsonData))
 	if err != nil {
 		return err
 	}
@@ -63,7 +64,7 @@ func UpdateMessage(updatedMessage dto.DtoMessageRequest) error {
 		return err
 	}
 
-	req, err := http.NewRequest(http.MethodPut, fmt.Sprintf("http://localhost:3000/api/message/%v", updatedMessage.IdMessage), bytes.NewBuffer(jsonData))
+	req, err := http.NewRequest(http.MethodPut, fmt.Sprintf("%s/api/message/%v", helper.BackendURL(), updatedMessage.IdMessage), bytes.NewBuffer(jsonData))
 	if err != nil {
 		return err
 	}
@@ -83,7 +84,7 @@ func UpdateMessage(updatedMessage dto.DtoMessageRequest) error {
 }
 
 func DeleteMessage(id int) error {
-	req, err := http.NewRequest(http.MethodDelete, fmt.Sprintf("http://localhost:3000/api/message/%v", id), nil)
+	req, err := http.NewRequest(http.MethodDelete, fmt.Sprintf("%s/api/message/%v", helper.BackendURL(), id), nil)
 	if err != nil {
 		return err
 	}
@@ -104,7 +105,7 @@ func DeleteMessage(id int) error {
 func GetMessagesByThread(id int) (*[]dto.DtoMessage, int, error) {
 	_client := http.Client{Timeout: time.Second * 5}
 
-	request, requestErr := http.NewRequest(http.MethodGet, fmt.Sprintf("http://localhost:3000/api/messages/%v", id), nil)
+	request, requestErr := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/api/messages/%v", helper.BackendURL(), id), nil)
 	if requestErr != nil {
 		return nil,
 			http.StatusInternalServerError,

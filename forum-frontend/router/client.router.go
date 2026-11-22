@@ -2,6 +2,7 @@ package router
 
 import (
 	"bluedit/forum-frontend/controllers_client"
+	"bluedit/forum-frontend/helper"
 	"bluedit/forum-frontend/middleware"
 	"net/http"
 
@@ -15,11 +16,13 @@ func ClientRoutes(router *mux.Router) {
 }
 
 func RegisterAssetsRoutes(r *mux.Router) {
-	r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir("./assets/"))))
+	assetsDir := helper.ResolveDir("assets")
+	r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir(assetsDir))))
 }
 
 func RegisterScriptsRoutes(r *mux.Router) {
-	r.PathPrefix("/scripts/").Handler(http.StripPrefix("/scripts/", http.FileServer(http.Dir("./scripts/"))))
+	scriptsDir := helper.ResolveDir("scripts")
+	r.PathPrefix("/scripts/").Handler(http.StripPrefix("/scripts/", http.FileServer(http.Dir(scriptsDir))))
 }
 
 func HtmlRoutes(router *mux.Router) {

@@ -6,18 +6,22 @@ import (
 	repository "bluedit/forum-backend/repositories"
 	"bluedit/forum-backend/routers"
 	"bluedit/forum-backend/services_api"
+	frontend "bluedit/forum-frontend/app"
 	"database/sql"
 
 	"github.com/gorilla/mux"
 )
 
 type App struct {
-	Db        *sql.DB
-	RouterApi *mux.Router
+	Db             *sql.DB
+	RouterApi      *mux.Router
+	FrontendRouter *mux.Router
 }
 
 func InitApp() *App {
 	config.LoadEnv()
+
+	feApp := frontend.InitApp()
 
 	db := config.InitDb()
 
@@ -61,8 +65,9 @@ func InitApp() *App {
 	)
 
 	return &App{
-		Db:        db,
-		RouterApi: routerApi,
+		Db:             db,
+		RouterApi:      routerApi,
+		FrontendRouter: feApp.RouterClient,
 	}
 }
 

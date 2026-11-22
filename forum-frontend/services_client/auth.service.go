@@ -1,6 +1,7 @@
 package services_client
 
 import (
+	"bluedit/forum-frontend/helper"
 	"bytes"
 	"encoding/json"
 	"errors"
@@ -15,7 +16,7 @@ type AuthService struct {
 
 func InitAuthService() *AuthService {
 	return &AuthService{
-		backendURL: "http://localhost:3000",
+		backendURL: helper.BackendURL(),
 	}
 }
 
@@ -44,7 +45,7 @@ func LoginUser(data dto.LoginRequestDto) (int, error) {
 		return -1, errors.New("Erreur préparation données")
 	}
 
-	response, responseErr := http.Post("http://localhost:3000/api/login", "application/json", bytes.NewBuffer(jsonData))
+	response, responseErr := http.Post(helper.BackendURL()+"/api/login", "application/json", bytes.NewBuffer(jsonData))
 	if responseErr != nil {
 		return -1, errors.New("Erreur envoi requête")
 	}

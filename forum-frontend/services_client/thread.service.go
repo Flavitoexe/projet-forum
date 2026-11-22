@@ -3,6 +3,7 @@ package services_client
 import (
 	"bluedit/forum-backend/models"
 	"bluedit/forum-frontend/dto"
+	"bluedit/forum-frontend/helper"
 	"bytes"
 	"cmp"
 	"encoding/json"
@@ -22,7 +23,7 @@ func CreateThread(newThread dto.DtoThread) (*dto.DtoThread, int, error) {
 	fmt.Println("jsondata : ", string(jsonData))
 
 	client := http.Client{Timeout: time.Second * 10}
-	resp, err := client.Post("http://localhost:3000/api/thread", "application/json", bytes.NewBuffer(jsonData))
+	resp, err := client.Post(helper.BackendURL()+"/api/thread", "application/json", bytes.NewBuffer(jsonData))
 	if err != nil {
 		return nil,
 			http.StatusInternalServerError,
@@ -51,7 +52,7 @@ func CreateThread(newThread dto.DtoThread) (*dto.DtoThread, int, error) {
 func GetAllThreads() (*[]models.Thread, int, error) {
 	_client := http.Client{Timeout: time.Second * 5}
 
-	request, requestErr := http.NewRequest(http.MethodGet, "http://localhost:3000/api/threads", nil)
+	request, requestErr := http.NewRequest(http.MethodGet, helper.BackendURL()+"/api/threads", nil)
 	if requestErr != nil {
 		return nil,
 			http.StatusInternalServerError,
@@ -88,7 +89,7 @@ func GetAllThreads() (*[]models.Thread, int, error) {
 func GetThreadById(id int) (*dto.DtoThread, int, error) {
 	_client := http.Client{Timeout: time.Second * 5}
 
-	request, requestErr := http.NewRequest(http.MethodGet, fmt.Sprintf("http://localhost:3000/api/thread/%v", id), nil)
+	request, requestErr := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/api/thread/%v", helper.BackendURL(), id), nil)
 	if requestErr != nil {
 		return nil,
 			http.StatusInternalServerError,
@@ -124,7 +125,7 @@ func GetThreadById(id int) (*dto.DtoThread, int, error) {
 func GetThreadsByCategory(id int) (*[]models.Thread, int, error) {
 	_client := http.Client{Timeout: 5 * time.Second}
 
-	request, requestErr := http.NewRequest(http.MethodGet, "http://localhost:3000/api/threads", nil)
+	request, requestErr := http.NewRequest(http.MethodGet, helper.BackendURL()+"/api/threads", nil)
 	if requestErr != nil {
 		return nil,
 			http.StatusInternalServerError,
@@ -167,7 +168,7 @@ func GetThreadsByCategory(id int) (*[]models.Thread, int, error) {
 func GetThreadsByPopularity() (*[]models.Thread, int, error) {
 	_client := http.Client{Timeout: 5 * time.Second}
 
-	request, requestErr := http.NewRequest(http.MethodGet, "http://localhost:3000/api/threads", nil)
+	request, requestErr := http.NewRequest(http.MethodGet, helper.BackendURL()+"/api/threads", nil)
 	if requestErr != nil {
 		return nil,
 			http.StatusInternalServerError,
@@ -213,7 +214,7 @@ func UpdateThread(newThread dto.DtoThreadRequest) error {
 		return err
 	}
 
-	req, err := http.NewRequest(http.MethodPut, fmt.Sprintf("http://localhost:3000/api/thread/%v", newThread.IdThread), bytes.NewBuffer(jsonData))
+	req, err := http.NewRequest(http.MethodPut, fmt.Sprintf("%s/api/thread/%v", helper.BackendURL(), newThread.IdThread), bytes.NewBuffer(jsonData))
 	if err != nil {
 		return err
 	}
@@ -233,7 +234,7 @@ func UpdateThread(newThread dto.DtoThreadRequest) error {
 }
 
 func DeleteThread(idThread int) error {
-	req, err := http.NewRequest(http.MethodDelete, fmt.Sprintf("http://localhost:3000/api/thread/%v", idThread), nil)
+	req, err := http.NewRequest(http.MethodDelete, fmt.Sprintf("%s/api/thread/%v", helper.BackendURL(), idThread), nil)
 	if err != nil {
 		return err
 	}

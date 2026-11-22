@@ -8,11 +8,12 @@ import (
 	"time"
 
 	"bluedit/forum-backend/models"
+	"bluedit/forum-frontend/helper"
 )
 
 func GetAllCategories() (*[]models.Category, int, error) {
 	client := http.Client{Timeout: time.Second * 10}
-	resp, err := client.Get("http://localhost:3000/api/categories")
+	resp, err := client.Get(helper.BackendURL() + "/api/categories")
 	if err != nil {
 		return nil, http.StatusInternalServerError, fmt.Errorf("Erreur réponse - %s", err.Error())
 	}
@@ -29,7 +30,7 @@ func GetAllCategories() (*[]models.Category, int, error) {
 func GetCategoryById(id int) (*models.Category, int, error) {
 	var category models.Category
 	client := http.Client{Timeout: time.Second * 10}
-	resp, err := client.Get(fmt.Sprintf("http://localhost:3000/api/category/%v", id))
+	resp, err := client.Get(fmt.Sprintf("%s/api/category/%v", helper.BackendURL(), id))
 	if err != nil {
 		return nil, http.StatusInternalServerError, fmt.Errorf("Erreur réponse - %s", err.Error())
 	}
@@ -49,7 +50,7 @@ func CreateCategory(category models.Category) error {
 	}
 
 	client := http.Client{Timeout: time.Second * 10}
-	resp, err := client.Post("http://localhost:3000/api/category", "application/json", bytes.NewBuffer(jsonData))
+	resp, err := client.Post(helper.BackendURL()+"/api/category", "application/json", bytes.NewBuffer(jsonData))
 	if err != nil {
 		return err
 	}
@@ -67,7 +68,7 @@ func UpdateCategory(id string, category models.Category) error {
 		return err
 	}
 
-	req, err := http.NewRequest(http.MethodPut, "http://localhost:3000/api/category/"+id, bytes.NewBuffer(jsonData))
+	req, err := http.NewRequest(http.MethodPut, helper.BackendURL()+"/api/category/"+id, bytes.NewBuffer(jsonData))
 	if err != nil {
 		return err
 	}
@@ -87,7 +88,7 @@ func UpdateCategory(id string, category models.Category) error {
 }
 
 func DeleteCategory(id string) error {
-	req, err := http.NewRequest(http.MethodDelete, "http://localhost:3000/api/category/"+id, nil)
+	req, err := http.NewRequest(http.MethodDelete, helper.BackendURL()+"/api/category/"+id, nil)
 	if err != nil {
 		return err
 	}

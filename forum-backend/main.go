@@ -28,4 +28,4 @@ func main() {
 	if err := http.ListenAndServe(":"+port, router); err != nil {
 		log.Fatalf("Erreur lancement serveur - Erreur\n\t%s", err.Error())
 	}
-
+}

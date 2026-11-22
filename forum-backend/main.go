@@ -5,7 +5,8 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strings"
+
+	"github.com/gorilla/mux"
 )
 
 func main() {
@@ -17,23 +18,14 @@ func main() {
 		port = "3000"
 	}
 
-	frontPort := os.Getenv("FRONT_PORT")
-	if frontPort == "" {
-		frontPort = ":8080"
-	} else if !strings.HasPrefix(frontPort, ":") {
-		frontPort = ":" + frontPort
-	}
+	router := mux.NewRouter()
+	router.PathPrefix("/api/").Handler(app.RouterApi)
+	router.Handle("/health", app.RouterApi)
+	router.Handle("/me", app.RouterApi)
+	router.PathPrefix("/").Handler(app.FrontendRouter)
 
-	go func() {
-		log.Printf("Serveur client lancé : http://localhost%s", frontPort)
-		if err := http.ListenAndServe(frontPort, app.FrontendRouter); err != nil {
-			log.Printf("Erreur lancement serveur client - Erreur\n\t%s", err.Error())
-		}
-	}()
-
-	log.Printf("Serveur API lancé : http://localhost:%s", port)
-	apiServeErr := http.ListenAndServe(":"+port, app.RouterApi)
-	if apiServeErr != nil {
-		log.Fatalf("Erreur lancement serveur API - Erreur\n\t%s", apiServeErr.Error())
+	log.Printf("Serveur front et API lancé : http://localhost:%s", port)
+	if err := http.ListenAndServe(":"+port, router); err != nil {
+		log.Fatalf("Erreur lancement serveur - Erreur\n\t%s", err.Error())
 	}
 }

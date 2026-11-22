@@ -32,6 +32,7 @@ func ThreadsRoutes(router *mux.Router, threadController *controllers.ThreadContr
 	router.HandleFunc("/api/thread/{id}", threadController.ReadById).Methods("GET")
 	router.HandleFunc("/api/thread/{id}", threadController.UpdateById).Methods("PUT")
 	router.HandleFunc("/api/thread/{id}", threadController.DeleteById).Methods("DELETE")
+	router.HandleFunc("/health", threadController.GetHealth).Methods("GET")
 }
 
 func MessagesRoutes(router *mux.Router, messageController *controllers.MessageControllers) {

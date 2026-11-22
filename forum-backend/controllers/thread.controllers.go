@@ -123,3 +123,9 @@ func (c *ThreadControllers) DeleteById(w http.ResponseWriter, r *http.Request) {
 		"message": "Thread supprimé",
 	})
 }
+
+func (c *ThreadControllers) GetHealth(w http.ResponseWriter, r *http.Request) {
+	helper.WriteJSON(w, http.StatusOK, map[string]string{
+		"message": "Backend OK",
+	})
+}

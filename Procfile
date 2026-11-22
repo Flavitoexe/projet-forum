@@ -1,1 +1,1 @@
-web: bluedit
+web: ./bin/forum-backend

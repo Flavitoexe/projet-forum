@@ -1,85 +1,67 @@
-# Projet_Forum - Bluedit
+## Architecture
 
-## Features
+L'application **Bluedit** (`forum-bluedit`) est structurée en monorepo Go (`go.mod` unique) et déployée sous forme d'un seul processus web sur **Scalingo** :
 
-### FT1 - Système d'inscription
+- **Backend API & serveur principal (`forum-backend`)** : expose l'API REST (threads, messages, catégories, utilisateurs, likes, authentification), la route de santé `GET /health` et rattache le routeur client (`RouterClient`) ainsi que les templates/assets du frontend sur un unique port (`$PORT` en production).
+- **Frontend (`forum-frontend`)** : génère et sert les pages/templates côté client via `RouterClient` et `helper.Load()`, et communique avec l'API.
+- **Base de données** : instance **MySQL** provisionnée via l'add-on Scalingo, reliée au processus web via les variables d'environnement `DB_*` (chaîne DSN au format `user:pass@tcp(host:port)/dbname?parseTime=true`).
+- **CI/CD** : dépôt hébergé sur GitHub avec un workflow **GitHub Actions** (`.github/workflows/go.yml`, ignoré uniquement pour `**.md`) exécutant `gofmt -l`, `go vet ./...` et `go build ./...`, suivi du déploiement automatique sur Scalingo depuis la branche `main` une fois les checks au vert.
 
-### FT-2 – Système de connexion
+---
 
-### FT-3 – Création d’un fil de discussion
+## Procédure de déploiement reproductible
 
-- Un fil de discussion doit posséder un état parmi les valeurs suivantes : ouvert, fermé ou archivé.
-- Un fil ouvert permet aux utilisateurs authentifiés de publier des messages.
-- Un fil fermé reste visible et consultable, mais ne permet plus de publier de nouveaux messages.
-- Un fil archivé ne doit plus être affiché ni accessible aux utilisateurs.
+### 1. Prérequis
+- Compte **GitHub** et compte **Scalingo** (CLI `scalingo` installée et connectée).
+- Application Scalingo créée (ex. `forum-bluedit`) avec l'add-on **MySQL** attaché et un `Procfile` lançant `./bin/forum-backend` sur le processus `web`.
 
-### FT-4 – Consulter un fil de discussion
+### 2. Configuration des variables d'environnement sur Scalingo
+Définir les variables requises sur l'application (sans mettre de secrets dans le dépôt) :
 
-- Les fils ouverts peuvent être consultés.
-- Les fils fermés peuvent être consultés.
-- Les fils archivés ne doivent pas être visibles.
-- Les messages associés au fil doivent être affichés selon les règles de tri définies.
+```bash
+scalingo --app forum-bluedit env-set JWT_SECRET="<secret_fort>"
+# Vérifier que DB_HOST, DB_PORT, DB_USER, DB_PWD, DB_NAME sont présents
+scalingo --app forum-bluedit env
+```
 
-### FT-5 Publication d’un message dans un fil de discussion
+### 3. Liaison GitHub et CI/CD automatique
+1. Pousser le code et le workflow CI (`.github/workflows/go.yml`) sur la branche `main` de GitHub.
+2. Vérifier que le workflow GitHub Actions (`gofmt -l`, `go vet ./...`, `go build ./...`) passe au vert.
+3. Dans le tableau de bord Scalingo (`forum-bluedit`), lier le dépôt GitHub, sélectionner la branche `main`, activer **Auto Deploy** et activer l'attente des statuts/checks GitHub avant déploiement.
 
-- Un message doit être publié dans un fil de discussion existant.
-- Un message ne peut être publié que dans un fil ouvert.
-- Un fil fermé ne doit pas accepter de nouveaux messages.
-- Un fil archivé ne doit pas accepter de nouveaux messages.
+### 4. Déploiement manuel (si besoin)
+```bash
+git push scalingo main
+scalingo --app forum-bluedit logs
+```
 
-### FT-6 – Réagir à un message d’un fil de discussion
+### 5. Vérification post-déploiement
 
-- Seul un utilisateur authentifié peut réagir à un message.
-- Un utilisateur ne peut pas liker et disliker le même message en même temps.
-- Un utilisateur ne peut avoir qu’une seule réaction active sur un même message.
-- Un like ajoute +1 au score de popularité du message.
-- Un dislike retire -1 au score de popularité du message.
-- Le score de popularité doit pouvoir être utilisé pour trier les messages.
+Contrôler la route de santé : GET https:///health doit retourner un statut 200.
 
-### FT-7 – Gestion des messages et des fils de discussion
+Vérifier dans les logs Scalingo (scalingo --app forum-bluedit logs) que la connexion MySQL et le démarrage du serveur sur $PORT ont réussi sans erreur.
 
-### FT-8 – Tri des messages d’un fil de discussion
+### 6. Variables d'environnement
 
-- Les messages doivent être affichés par défaut du plus récent au plus ancien.
-- L’utilisateur doit pouvoir afficher les messages par ordre chronologique.
-- L’utilisateur doit pouvoir afficher les messages selon leur score de popularité.
-- Le score de popularité est calculé à partir des likes et des dislikes.
-- Un like ajoute +1 au score de popularité.
-- Un dislike retire -1 au score de popularité.
-- Le tri par popularité doit tenir compte du score calculé pour chaque message.
+Les variables suivantes sont lues par l'application (aucune valeur ne doit être versionnée dans Git) :
 
-### FT-9 – Pagination des fils de discussion et des messages
+| Variable | Description | Obligatoire |
+| --- | --- | --- |
+| PORT | Port d'écoute HTTP fourni dynamiquement par Scalingo (repli local si non défini) | Oui (en prod) |
+| DB_HOST | Hôte du serveur MySQL | Oui |
+| DB_PORT | Port du serveur MySQL | Oui |
+| DB_USER | Nom d'utilisateur de la base MySQL | Oui |
+| DB_PWD | Mot de passe de la base MySQL | Oui |
+| DB_NAME | Nom de la base de données MySQL | Oui |
+| JWT_SECRET | Clé secrète utilisée pour signer/vérifier les jetons d'authentification | Oui |
 
-- Les listes de fils de discussion doivent pouvoir être paginées.
-- Les listes de messages doivent pouvoir être paginées.
-- L’utilisateur doit pouvoir choisir un affichage par lots de 10, 20 ou 30 éléments.
-- L’utilisateur doit pouvoir choisir d’afficher la totalité des éléments.
-- Par défaut, les éléments doivent être affichés par lots de 10.
+### 7. Coût mensuel : estimé vs réel
 
-### FT-10 – Afficher les fils de discussion par tag/catégorie
+À compléter avec les tarifs exacts de ton compte / période de facturation (selon le plan du conteneur web et le plan de l'add-on MySQL sur Scalingo).
 
-- Seuls les fils visibles doivent apparaître dans les résultats.
-- Les fils archivés ne doivent pas apparaître dans les résultats.
-- Le filtrage doit conserver un affichage cohérent avec les règles de pagination.
-
-### FT-11 – Rechercher un fil de discussion
-
-- Seul un utilisateur authentifié peut effectuer une recherche.
-- La recherche doit pouvoir porter sur le titre d’un fil de discussion.
-- La recherche doit pouvoir porter sur un tag/catégorie.
-- Le système doit déterminer automatiquement si la recherche correspond à un titre, un tag ou une catégorie.
-- Les fils archivés ne doivent pas apparaître dans les résultats.
-- Les résultats doivent respecter les règles de visibilité des fils de discussion.
-
-### FT-12 – Gestion et administration de la plateforme
-
-- Seuls les utilisateurs possédant le rôle administrateur peuvent accéder au tableau de bord d’administration.
-- Un administrateur peut modifier l’état d’un fil de discussion.
-- Un administrateur peut supprimer un fil de discussion.
-- Un administrateur peut supprimer un message.
-- Un administrateur peut bannir un compte utilisateur.
-- Un administrateur peut agir sur un fil même s’il n’en est pas le propriétaire.
-- Un administrateur peut agir sur un message même s’il n’en est pas l’auteur.
-- Un utilisateur banni ne doit plus pouvoir accéder aux fonctionnalités nécessitant une authentification.
-
-## Auteurs
+Poste | Coût mensuel estimé | Coût mensuel réel | Notes
+| --- | --- | --- | --- |
+Conteneur web Scalingo (web) | 14.40€ | 14.40€ | Selon le plan choisi (M)
+Add-on base de données MySQL | 7.20€ | 7.20€ | Selon le plan MySQL Scalingo
+GitHub / GitHub Actions | Gratuit (Dépôt public) | Gratuit (Dépôt public) | Selon le forfait du compte / quota de minutes
+Total | 21.60€ | 21.60€ | Comparer l'estimation initiale au relevé de facturation réel
